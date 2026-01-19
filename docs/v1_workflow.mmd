@@ -1,0 +1,38 @@
+flowchart TD
+    A[Microphone Input<br/>Mono PCM 8–16 kHz] --> B[Audio Framing<br/>20–40 ms Frames]
+
+    B --> C[Thread-Safe Queue<br/>Capture ↔ Inference Decoupling]
+
+    C --> D[Sliding Buffer<br/>1–2 Second Rolling Window]
+
+    D --> E[On-Device Feature Extraction]
+    E --> E1[Log-Mel / MFCCs]
+    E --> E2["Loudness (RMS Energy)"]
+    E --> E3[Pitch / Pitch Variance]
+
+    E --> F[TinyML Model<br/>CNN or CNN + Light RNN<br/>INT8 Quantized]
+
+    F --> G[Intent Probabilities]
+    G --> G1[Police Emergency]
+    G --> G2[Medical Emergency]
+    G --> G3[Fire Emergency]
+    G --> G4[Women Safety]
+    G --> G5[General Distress]
+    G --> G6[Non-Emergency / Noise]
+
+    G --> H[Temporal Smoothing<br/>Multi-Window Confirmation]
+
+    H --> I{Confidence ≥ Threshold?}
+
+    I -- Yes --> J[Decision & Action Layer]
+    I -- No --> K[Fail-Safe Logic<br/>Retry / Manual Trigger]
+
+    J --> J1[Call 100<br/>Police]
+    J --> J2[Call 108<br/>Ambulance]
+    J --> J3[Call 101<br/>Fire]
+    J --> J4[Call 1091<br/>Women Safety]
+    J --> J5[Escalation Flow<br/>General Distress]
+
+    style F fill:#1f2933,color:#ffffff
+    style J fill:#14532d,color:#ffffff
+    style K fill:#7c2d12,color:#ffffff

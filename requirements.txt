@@ -1,18 +1,13 @@
-transformers
-langchain
-langchain-huggingface
-torch
-torchvision
-torchaudio
-sentencepiece
-datasets
-soundfile
-Django>=4.2.0
-Pillow
-requests
-fastapi
-uvicorn
-scikit-learn
-faster_whisper
-torch
-sounddevice
+# Core dependencies for TinyML Emergency Detection
+tensorflow>=2.10.0
+numpy>=1.21.0
+librosa>=0.9.0
+sounddevice>=0.4.0
+scipy>=1.7.0
+faster-whisper>=0.9.0
+
+# Development dependencies (optional)
+# pytest>=7.0.0
+# black>=22.0.0
+# flake8>=4.0.0
+# mypy>=0.950

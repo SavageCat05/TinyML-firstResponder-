@@ -8,6 +8,7 @@ import logging
 import datetime
 from collections import deque
 import threading
+import numpy as np
 from .audio_capture import AudioCapture
 from .feature_extraction import FeatureExtractor
 from .model import EmergencyIntentModel
@@ -15,6 +16,12 @@ from .config import (
     CONFIDENCE_THRESHOLD, TEMPORAL_CONFIRMATIONS,
     EMERGENCY_ACTIONS, LOG_FILE, MAX_LATENCY_MS
 )
+
+try:
+    from faster_whisper import WhisperModel
+    WHISPER_AVAILABLE = True
+except ImportError:
+    WHISPER_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +36,14 @@ class EmergencyDetector:
         self.feature_extractor = FeatureExtractor()
         self.model = EmergencyIntentModel()
 
+        # Speech-to-text model
+        self.whisper_model = None
+        if WHISPER_AVAILABLE:
+            try:
+                self.whisper_model = WhisperModel("tiny", device="cpu", compute_type="int8")
+            except Exception as e:
+                pass
+
         # Temporal smoothing for decision stability
         self.recent_predictions = deque(maxlen=TEMPORAL_CONFIRMATIONS)
         self.last_action_time = 0
@@ -37,6 +52,7 @@ class EmergencyDetector:
         # Performance monitoring
         self.inference_times = deque(maxlen=100)
         self.total_inferences = 0
+        self.last_latency_warning_time = 0
 
         # Control flags
         self.is_running = False
@@ -52,7 +68,6 @@ class EmergencyDetector:
         Start the emergency detection system
         """
         if self.is_running:
-            logger.warning("Emergency detector already running")
             return
 
         try:
@@ -67,10 +82,7 @@ class EmergencyDetector:
             self.detection_thread = threading.Thread(target=self._detection_loop, daemon=True)
             self.detection_thread.start()
 
-            logger.info("🚨 Emergency detection system started")
-
         except Exception as e:
-            logger.error(f"Failed to start emergency detector: {e}")
             self.stop()
             raise
 
@@ -90,54 +102,59 @@ class EmergencyDetector:
         if self.detection_thread and self.detection_thread.is_alive():
             self.detection_thread.join(timeout=2.0)
 
-        logger.info("🛑 Emergency detection system stopped")
-
     def _detection_loop(self):
         """
         Main detection loop - runs in background thread
         """
-        logger.info("Starting detection loop...")
+        print("\n[*] Listening for audio input...")
+        print("[*] Press Ctrl+C to stop\n")
 
         while self.is_running:
             try:
-                start_time = time.time()
-
                 # Get current audio window
                 audio_window = self.audio_capture.get_audio_window()
 
                 if audio_window is not None:
+                    # Try to get speech transcription
+                    transcribed_text = None
+                    if self.whisper_model:
+                        try:
+                            segments, info = self.whisper_model.transcribe(audio_window, language="en", beam_size=1)
+                            transcribed_text = " ".join([segment.text for segment in segments]).strip()
+                        except Exception:
+                            pass
+                    
                     # Extract features
                     features = self.feature_extractor.extract_features(audio_window)
 
                     if features is not None:
-                        # Prepare model input
                         model_input = self.feature_extractor.get_model_input(features)
 
                         if model_input is not None:
-                            # Run inference
-                            result = self.model.predict(model_input[np.newaxis, ...])
+                            try:
+                                result = self.model.predict(model_input[np.newaxis, ...])
+                                smoothed_result = self._apply_temporal_smoothing(result)
 
-                            # Apply temporal smoothing
-                            smoothed_result = self._apply_temporal_smoothing(result)
+                                # Only show input and decision
+                                if smoothed_result is not None:
+                                    detected_class = smoothed_result['predicted_class']
+                                    confidence = smoothed_result['confidence']
+                                    
+                                    # Display: Input -> Output
+                                    if transcribed_text:
+                                        print(f"> Input: \"{transcribed_text}\"")
+                                    print(f"  Result: {detected_class.upper()} ({confidence:.0%})\n")
+                                    
+                                    self._process_decision(smoothed_result, transcribed_text)
 
-                            # Make decision and trigger action if needed
-                            self._process_decision(smoothed_result)
-
-                            # Record inference time for performance monitoring
-                            inference_time = (time.time() - start_time) * 1000
-                            self.inference_times.append(inference_time)
-                            self.total_inferences += 1
-
-                            # Log performance warning if exceeding latency target
-                            if inference_time > MAX_LATENCY_MS:
-                                logger.warning(f"High latency: {inference_time:.1f} ms")
+                            except Exception as e:
+                                pass
 
                 # Small delay to prevent excessive CPU usage
                 time.sleep(0.1)
 
-            except Exception as e:
-                logger.error(f"Detection loop error: {e}")
-                time.sleep(1.0)  # Longer delay on error
+            except Exception:
+                time.sleep(1.0)
 
     def _apply_temporal_smoothing(self, current_result):
         """
@@ -164,7 +181,7 @@ class EmergencyDetector:
 
         return None  # No temporal agreement yet
 
-    def _process_decision(self, result):
+    def _process_decision(self, result, transcribed_text=None):
         """
         Process the detection result and trigger appropriate action
         """
@@ -177,51 +194,48 @@ class EmergencyDetector:
 
         # Check confidence threshold
         if confidence < CONFIDENCE_THRESHOLD:
-            logger.debug(f"Low confidence: {predicted_class} ({confidence:.2f})")
             return
 
         # Check temporal confirmation
         if not temporally_confirmed:
-            logger.debug(f"Temporal confirmation pending: {predicted_class}")
             return
 
         # Check cooldown period
         current_time = time.time()
         if current_time - self.last_action_time < self.action_cooldown:
-            logger.debug("Action on cooldown")
             return
 
-        # Trigger emergency action
-        self._trigger_emergency_action(predicted_class, confidence, result)
+        # Trigger emergency action with transcribed text
+        self._trigger_emergency_action(predicted_class, confidence, result, transcribed_text)
 
         # Update last action time
         self.last_action_time = current_time
 
-    def _trigger_emergency_action(self, intent_class, confidence, result):
+    def _trigger_emergency_action(self, intent_class, confidence, result, transcribed_text=None):
         """
         Trigger the appropriate emergency action based on detected intent
         """
         if intent_class not in EMERGENCY_ACTIONS:
-            logger.error(f"Unknown intent class: {intent_class}")
             return
 
         action_info = EMERGENCY_ACTIONS[intent_class]
 
         # Log the emergency detection
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        text_part = f" | Speech: '{transcribed_text}'" if transcribed_text else ""
         log_entry = (
-            f"[{timestamp}] EMERGENCY DETECTED: {intent_class} "
-            f"(confidence: {confidence:.2f}) - {action_info.get('description', 'Unknown')}"
+            f"[{timestamp}] EMERGENCY: {intent_class} ({confidence:.2f}){text_part}"
         )
-
-        logger.warning(log_entry)
 
         # Write to emergency log
         with open(LOG_FILE, "a", encoding="utf-8") as f:
             f.write(log_entry + "\n")
 
-        # Print alert to console
-        print(f"🚨🚨🚨 {log_entry}")
+        # Print only critical alerts
+        if intent_class != "non_emergency_noise":
+            print(f"\n*** ALERT: {intent_class.upper()} ({confidence:.0%}) ***\n")
+            if transcribed_text:
+                print(f"    Speech: \"{transcribed_text}\"\n")
 
         # Trigger the actual emergency action
         self.emergency_handler.trigger_action(intent_class, action_info, confidence, result)
@@ -296,7 +310,7 @@ class EmergencyActionHandler:
         """
         print(f"   → Simulating call to {number} ({description})")
         print(f"   → Confidence level: {confidence:.2f}")
-        print("   → Call would include location data and detected intent"
+        print("   → Call would include location data and detected intent")
         # In production, this would:
         # 1. Get device location (GPS)
         # 2. Initiate phone call to emergency number
@@ -309,7 +323,7 @@ class EmergencyActionHandler:
         """
         print("   → Escalating to human operator")
         print(f"   → Confidence level: {confidence:.2f}")
-        print("   → Would notify monitoring center for manual verification"
+        print("   → Would notify monitoring center for manual verification")
         # In production, this would:
         # 1. Alert human operators
         # 2. Provide audio context

@@ -47,7 +47,7 @@ class AudioCapture:
         Callback function for audio stream - runs in separate thread
         """
         if status:
-            logger.warning(f"Audio callback status: {status}")
+            pass  # Silently handle status messages
 
         # Convert to mono if needed and flatten
         if self.channels == 1:
@@ -59,14 +59,12 @@ class AudioCapture:
         try:
             self.audio_queue.put(audio_data, timeout=0.1)  # Non-blocking with timeout
         except:
-            logger.warning("Audio queue full, dropping frame")
+            pass  # Silent fail on queue full
 
     def _capture_loop(self):
         """
         Main capture loop - runs in background thread
         """
-        logger.info("🎙️ Starting audio capture...")
-
         try:
             with sd.InputStream(
                 samplerate=self.sample_rate,

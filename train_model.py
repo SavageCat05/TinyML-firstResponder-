@@ -117,7 +117,7 @@ def train_and_quantize():
     quantized_model = model.quantize_model()
 
     # Verify quantized model
-    print("\n✅ Verifying quantized model...")
+    print("\nVerifying quantized model...")
     model.load_model()
 
     # Test inference
@@ -131,16 +131,16 @@ def train_and_quantize():
         print(f"Sample {i+1}: {predicted_class} (confidence: {confidence:.3f})")
 
     # Benchmark latency
-    print("\n⏱️  Benchmarking latency...")
+    print("\nBenchmarking latency...")
     latency_results = model.benchmark_latency(num_runs=50)
 
-    print("\n🏆 Training Complete!")
+    print("\nTraining Complete!")
     print("=" * 30)
     print(f"Model saved: {model.model_path}")
     print(f"Accuracy: {accuracy:.2f}")
-    print(f"Target met: {'✅' if latency_results['meets_target'] else '❌'} (<100ms)")
+    print(f"Target met: {'YES' if latency_results['meets_target'] else 'NO'} (<100ms)")
     print(f"Model size: {os.path.getsize(model.model_path)/1024:.1f} KB")
-    print(f"Size target met: {'✅' if os.path.getsize(model.model_path) < 500*1024 else '❌'} (<500KB)")
+    print(f"Size target met: {'YES' if os.path.getsize(model.model_path) < 500*1024 else 'NO'} (<500KB)")
 
     return model
 
@@ -151,10 +151,10 @@ if __name__ == '__main__':
 
     try:
         trained_model = train_and_quantize()
-        print("\n🎉 TinyML Emergency Model ready for deployment!")
+        print("\nTinyML Emergency Model ready for deployment!")
         print("   Run 'python run_emergency_detector.py benchmark' to test performance")
         print("   Run 'python run_emergency_detector.py run' to start detection")
 
     except Exception as e:
-        print(f"\n❌ Training failed: {e}")
+        print(f"\nTraining failed: {e}")
         sys.exit(1)

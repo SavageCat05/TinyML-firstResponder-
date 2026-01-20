@@ -72,7 +72,7 @@ python run_emergency_detector.py benchmark
 ### 3. Run Emergency Detection
 
 ```bash
-python run_emergency_detector.py run
+python src/run_emergency_detector.py run
 ```
 
 The system will:

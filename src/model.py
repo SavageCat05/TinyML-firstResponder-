@@ -8,7 +8,7 @@ import numpy as np
 import os
 import logging
 from pathlib import Path
-from config import (
+from .config import (
     MODEL_INPUT_SHAPE, NUM_CLASSES, MODEL_PATH,
     INTENT_CLASSES, MAX_MODEL_SIZE_KB
 )

@@ -10,8 +10,8 @@ import time
 import numpy as np
 
 from .emergency_detector import EmergencyDetector
-from model import EmergencyIntentModel
-from config import (
+from .model import EmergencyIntentModel
+from .config import (
     SAMPLE_RATE,
     SLIDING_WINDOW_SECONDS,
     NUM_CLASSES,

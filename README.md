@@ -4,14 +4,13 @@ A complete edge-deployable audio-based emergency intent detection system using T
 
 ## 🎯 Overview
 
-This system listens to audio, extracts acoustic features (loudness, pitch, prosody), and uses a TinyML CNN model to classify user intent into 6 emergency categories. When an emergency is detected with sufficient confidence, it automatically triggers the appropriate emergency response.
+This system listens to audio, and uses a TinyML CNN model to classify user intent into 6 emergency categories. When an emergency is detected with sufficient confidence, it automatically triggers the appropriate emergency response.
 
 **Key Features:**
 - **Edge-first design**: No cloud dependency, runs on microcontrollers
 - **Real-time processing**: <100ms latency per inference
 - **TinyML optimized**: <500KB quantized model
-- **Human-like reasoning**: Uses tone, loudness, and emotional cues
-- **Fail-safe**: Temporal confirmation prevents false alarms
+- **Fail-safe**: Temporal confirmation prevents false alarms (this means for eg out of 10 events, if 7 (eg threshold) show true -> model returns true)
 
 ## 🚨 Emergency Classes
 
@@ -36,8 +35,8 @@ Microphone → Audio Capture → Feature Extraction → TinyML Model → Decisio
 ### Core Components
 
 - **Audio Capture**: Continuous sampling with 30ms frames, 1.5s sliding buffer
-- **Feature Extraction**: MFCCs, log-mel spectrograms, RMS energy, pitch variance
-- **TinyML Model**: 3-layer CNN with int8 quantization (16→32→64 filters)
+- **Feature Extraction**: MFCCs (describe how audio sounds to human ears), log-mel spectrograms, RMS energy, pitch variance
+- **TinyML Model**: 3-layer CNN with int8 quantization (16→32→64 filters) (more filters lead to more expressive vocabullary)
 - **Decision Logic**: 70% confidence threshold + 3-window temporal confirmation
 - **Emergency Actions**: Automatic calls to Indian emergency numbers
 

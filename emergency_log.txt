@@ -1,0 +1,86 @@
+[2026-01-20 12:54:16] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.82) - Non-emergency audio
+[2026-01-20 12:54:21] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:54:26] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:54:31] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.97) - Non-emergency audio
+[2026-01-20 12:54:37] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.99) - Non-emergency audio
+[2026-01-20 12:54:43] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:54:48] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:54:54] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:54:59] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:55:04] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:55:09] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:55:15] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:55:20] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:55:25] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:55:31] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 12:55:36] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 13:00:27] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 13:00:33] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.92) - Non-emergency audio
+[2026-01-20 13:00:39] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.97) | Speech: 'Disurve.' - Non-emergency audio
+[2026-01-20 13:00:45] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.96) | Speech: 'Thank you.' - Non-emergency audio
+[2026-01-20 13:00:51] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.96) - Non-emergency audio
+[2026-01-20 13:00:56] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.96) | Speech: 'Oh, here we go.' - Non-emergency audio
+[2026-01-20 13:01:02] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.94) | Speech: 'Let's go.  I'm gonna go there.' - Non-emergency audio
+[2026-01-20 13:01:08] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.87) | Speech: 'I don't need that' - Non-emergency audio
+[2026-01-20 13:01:17] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.85) | Speech: 'Okay.' - Non-emergency audio
+[2026-01-20 13:01:22] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.88) | Speech: 'Tiki' - Non-emergency audio
+[2026-01-20 13:01:28] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 13:01:33] EMERGENCY DETECTED: non_emergency_noise (confidence: 0.95) - Non-emergency audio
+[2026-01-20 13:01:39] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 13:01:45] EMERGENCY DETECTED: non_emergency_noise (confidence: 1.00) - Non-emergency audio
+[2026-01-20 13:08:48] EMERGENCY: non_emergency_noise (0.91) | Speech: 'Okay.  With my recipe.'
+[2026-01-20 13:08:53] EMERGENCY: non_emergency_noise (0.99)
+[2026-01-20 13:08:59] EMERGENCY: non_emergency_noise (0.97) | Speech: '15 new names.'
+[2026-01-20 13:09:04] EMERGENCY: non_emergency_noise (0.98) | Speech: 'Okay, let's drink some'
+[2026-01-20 13:09:10] EMERGENCY: non_emergency_noise (0.97) | Speech: 'the world of Kalmitar Sadang.'
+[2026-01-20 13:09:16] EMERGENCY: non_emergency_noise (0.84) | Speech: 'or if I get time waste get the only'
+[2026-01-20 13:09:21] EMERGENCY: non_emergency_noise (0.87)
+[2026-01-20 13:09:27] EMERGENCY: non_emergency_noise (0.99) | Speech: 'See you next time.'
+[2026-01-20 13:09:33] EMERGENCY: non_emergency_noise (0.98) | Speech: 'so I wait in my party'
+[2026-01-20 13:09:38] EMERGENCY: non_emergency_noise (0.98) | Speech: 'this way is a machine that has'
+[2026-01-20 13:09:45] EMERGENCY: non_emergency_noise (0.95) | Speech: 'I read it, I read it, I don't know, I'll be right back.'
+[2026-01-20 13:09:52] EMERGENCY: non_emergency_noise (0.99) | Speech: 'you will actually cut it.'
+[2026-01-20 13:09:58] EMERGENCY: non_emergency_noise (0.93)
+[2026-01-20 13:10:05] EMERGENCY: non_emergency_noise (0.98) | Speech: 'I don't know what's going on here.'
+[2026-01-20 13:10:10] EMERGENCY: non_emergency_noise (1.00) | Speech: 'We'll leave the room, keep us with faith.'
+[2026-01-20 13:10:15] EMERGENCY: non_emergency_noise (0.93)
+[2026-01-20 13:10:21] EMERGENCY: non_emergency_noise (0.87) | Speech: 'Hmm'
+[2026-01-20 13:10:26] EMERGENCY: non_emergency_noise (0.99)
+[2026-01-20 13:10:32] EMERGENCY: non_emergency_noise (0.98)
+[2026-01-20 13:10:37] EMERGENCY: non_emergency_noise (0.99) | Speech: 'So that's all for today I am going to have a music record.'
+[2026-01-20 13:10:43] EMERGENCY: non_emergency_noise (0.95)
+[2026-01-20 13:10:49] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-20 13:10:57] EMERGENCY: non_emergency_noise (0.98) | Speech: 'and never tell me that there is no one.'
+[2026-01-20 13:11:02] EMERGENCY: non_emergency_noise (0.93) | Speech: '3, 2, 1...'
+[2026-01-20 13:11:07] EMERGENCY: non_emergency_noise (0.99) | Speech: 'Okay.'
+[2026-01-20 13:11:14] EMERGENCY: non_emergency_noise (0.98) | Speech: 'you need to find a person to find it.'
+[2026-01-20 13:11:20] EMERGENCY: non_emergency_noise (0.99) | Speech: 'I'm gonna need full'
+[2026-01-20 13:11:25] EMERGENCY: non_emergency_noise (0.99) | Speech: 'to this.'
+[2026-01-20 13:11:34] EMERGENCY: non_emergency_noise (0.94) | Speech: 'I do.'
+[2026-01-20 13:11:40] EMERGENCY: non_emergency_noise (1.00) | Speech: 'up.'
+[2026-01-20 13:11:45] EMERGENCY: non_emergency_noise (0.91)
+[2026-01-20 13:11:51] EMERGENCY: non_emergency_noise (0.88) | Speech: 'which I love for my husband.'
+[2026-01-20 13:11:57] EMERGENCY: non_emergency_noise (0.96)
+[2026-01-20 13:12:02] EMERGENCY: non_emergency_noise (0.99) | Speech: 'Sure.'
+[2026-01-20 13:12:08] EMERGENCY: non_emergency_noise (1.00) | Speech: 'Okay.'
+[2026-01-21 01:33:26] EMERGENCY: non_emergency_noise (0.99)
+[2026-01-21 01:33:31] EMERGENCY: non_emergency_noise (0.87)
+[2026-01-21 01:33:36] EMERGENCY: non_emergency_noise (0.91)
+[2026-01-21 01:33:41] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:33:47] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:33:52] EMERGENCY: non_emergency_noise (0.88)
+[2026-01-21 01:33:58] EMERGENCY: non_emergency_noise (0.96)
+[2026-01-21 01:34:03] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:34:09] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:34:14] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:34:20] EMERGENCY: non_emergency_noise (0.91)
+[2026-01-21 01:34:26] EMERGENCY: non_emergency_noise (0.94)
+[2026-01-21 01:34:31] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:34:37] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:34:42] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:34:48] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:34:53] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:34:59] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:35:05] EMERGENCY: non_emergency_noise (0.94)
+[2026-01-21 01:35:10] EMERGENCY: non_emergency_noise (1.00)
+[2026-01-21 01:35:16] EMERGENCY: non_emergency_noise (1.00)

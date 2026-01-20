@@ -112,9 +112,10 @@ class FeatureExtractor:
         if np.max(log_mel) > np.min(log_mel):
             log_mel = (log_mel - np.min(log_mel)) / (np.max(log_mel) - np.min(log_mel))
 
-        # Reshape for CNN input (time, freq, channel)
+        # Reshape for CNN input (freq, time, channel)
         # Target shape: MODEL_INPUT_SHAPE = (40, 50, 1)
-        target_time, target_freq = MODEL_INPUT_SHAPE[0], MODEL_INPUT_SHAPE[1]
+        # 40 = mel frequency bins, 50 = time steps
+        target_freq, target_time = MODEL_INPUT_SHAPE[0], MODEL_INPUT_SHAPE[1]
 
         # Resize frequency dimension
         if log_mel.shape[0] != target_freq:

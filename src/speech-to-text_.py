@@ -16,7 +16,7 @@ CHANNELS = 1
 LOG_FILE = "distress_log.txt"
 
 CONFIDENCE_THRESHOLD = -1.0
-KEYWORDS = ["help", "emergency", "save me", "danger", "please help"]
+KEYWORDS = ["help", "emergency", "save me", "danger", "please help", "call 911", "call ambulance"]
 STOP_WORDS = ["stop listening", "shutdown", "exit program"]
 # ======================
 # MODEL

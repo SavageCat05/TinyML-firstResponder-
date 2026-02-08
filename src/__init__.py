@@ -16,7 +16,6 @@ Target: <500KB model, <100ms latency, microcontroller deployment
 from .config import *
 from .audio_capture import AudioCapture
 from .feature_extraction import FeatureExtractor
-from .model import EmergencyIntentModel
 from .emergency_detector import EmergencyDetector
 from .main import TinyMLEmergencyApp
 

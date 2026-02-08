@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from src.config import SAMPLE_RATE, SLIDING_WINDOW_SECONDS, NUM_CLASSES, MODEL_INPUT_SHAPE
-from src.features.feature_extraction import FeatureExtractor
+from src.feature_extraction import FeatureExtractor
 
 logger = logging.getLogger(__name__)
 

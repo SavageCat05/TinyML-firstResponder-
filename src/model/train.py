@@ -6,7 +6,7 @@ import os
 import json # Added import
 
 from src.model.architecture import EmergencyIntentModel
-from src.features.feature_extraction import FeatureExtractor
+from src.feature_extraction import FeatureExtractor
 from src.config import (
     SAMPLE_RATE, SLIDING_WINDOW_SECONDS, MODEL_INPUT_SHAPE,
     NUM_CLASSES, MODEL_PATH, MAX_MODEL_SIZE_KB, INTENT_CLASSES

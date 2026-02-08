@@ -36,7 +36,7 @@ Microphone → Audio Capture → Feature Extraction → TinyML Model → Decisio
 
 - **Audio Capture**: Continuous sampling with 30ms frames, 1.5s sliding buffer
 - **Feature Extraction**: MFCCs (describe how audio sounds to human ears), log-mel spectrograms, RMS energy, pitch variance
-- **TinyML Model**: 3-layer CNN with int8 quantization (16→32→64 filters) (more filters lead to more expressive vocabullary)
+- **TinyML Model**: MobileNet-style CNN with inverted residuals, SE attention blocks, and int8 quantization (~41K params, ~161KB)
 - **Decision Logic**: 70% confidence threshold + 3-window temporal confirmation
 - **Emergency Actions**: Automatic calls to Indian emergency numbers
 
@@ -166,7 +166,9 @@ The quantized TFLite model (`models/emergency_intent_model.tflite`) can be deplo
 - **Pitch**: Fundamental frequency and variance
 - **Temporal**: Speaking rate and energy patterns
 
-### Model Architecture
+### Model Architecture Evolution
+
+#### v1.0 - Simple CNN (Previous)
 ```
 Input: (40, 50, 1) log-mel spectrogram
 Conv2D(16, 3x3) → MaxPool → BatchNorm
@@ -174,6 +176,57 @@ Conv2D(32, 3x3) → MaxPool → BatchNorm
 Conv2D(64, 3x3) → MaxPool → BatchNorm
 GlobalAvgPool → Dense(64) → Dropout(0.3) → Dense(6, softmax)
 ```
+
+#### v2.0 - MobileNet-Style (Current)
+```
+Input: (40, 50, 1) log-mel spectrogram
+│
+├── Stem: Conv2D(16, 3x3, stride=2) → BatchNorm → ReLU6
+│
+├── Block 1: Inverted Residual (expansion=2x, filters=24)
+│   └── 1x1 Expand → 3x3 Depthwise → 1x1 Project
+│
+├── Block 2: Inverted Residual (expansion=4x, filters=32) + SE Attention
+│   └── Squeeze-Excite recalibrates channel importance
+│
+├── Block 3: Inverted Residual (expansion=4x, filters=64) + SE Attention
+│
+└── Head: GlobalMaxPool → Dense(64) → Dropout(0.3) → Dense(6, softmax)
+```
+
+### Architecture Comparison
+
+| Aspect | v1.0 Simple CNN | v2.0 MobileNet-Style |
+|--------|-----------------|----------------------|
+| **Parameters** | ~50-80K | 41,334 |
+| **Model Size** | ~300-400KB | ~161KB |
+| **Convolutions** | Standard Conv2D | Depthwise Separable |
+| **Attention** | None | Squeeze-and-Excitation |
+| **Activation** | ReLU | ReLU6 (quantization-friendly) |
+| **Pooling** | Global Average | Global Max (better for sparse events) |
+| **Skip Connections** | None | Residual connections |
+
+### When v2.0 Works Better
+
+1. **Noisy Environments** (traffic, crowds, TV background)
+   - SE blocks dynamically suppress irrelevant frequencies
+   - Focuses attention on voice/distress signal frequencies
+
+2. **Sparse Audio Events** (sudden screams, single keywords)
+   - Global Max Pooling captures peak activations
+   - Better than averaging which dilutes brief signals
+
+3. **Resource-Constrained Devices** (ESP32, Arduino Nano 33)
+   - 2x smaller model with same or better accuracy
+   - Depthwise separable convs = ~9x fewer FLOPs per layer
+
+4. **Real-Time Edge Inference**
+   - ReLU6 clipping makes int8 quantization more accurate
+   - BatchNorm fusion reduces inference ops
+
+5. **Gradient Flow During Training**
+   - Inverted residuals prevent vanishing gradients
+   - Better learns subtle emergency audio cues
 
 ### Quantization
 - **Post-training quantization** to int8

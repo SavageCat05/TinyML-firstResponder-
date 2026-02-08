@@ -124,6 +124,7 @@ dmypy.json
 
 # Project specific
 models/
+datasets/
 *.tflite
 logs/
 *.log

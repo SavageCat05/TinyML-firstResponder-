@@ -18,21 +18,35 @@ logger = logging.getLogger(__name__)
 class ModelTrainer:
     """
     Handles training, evaluation, and quantization of the TinyML Emergency Intent Model.
+    Implements persistent model check - loads existing model if available, trains if not.
     """
     def __init__(self, model_input_shape=MODEL_INPUT_SHAPE, num_classes=NUM_CLASSES):
         self.model_input_shape = model_input_shape
         self.num_classes = num_classes
         self.emergency_model = EmergencyIntentModel()
-        self.emergency_model.build_model() # Build the model architecture
+        
+        # Flag to track if model was loaded from existing weights
+        self.model_loaded_from_file = False
+
+        # Path for saving models
+        self.saved_model_dir = os.path.join("models", "saved_models")
+        self.metadata_dir = os.path.join("models", "metadata")
+        Path(self.saved_model_dir).mkdir(parents=True, exist_ok=True)
+        Path(self.metadata_dir).mkdir(parents=True, exist_ok=True)
+
+        # Persistent Model Check: Check for existing model at startup
+        if self.emergency_model.check_existing_model():
+            # Existing model found - load weights and skip training
+            if self.emergency_model.load_existing_model():
+                self.model_loaded_from_file = True
+                logger.info("Model loaded from existing weights. Ready for evaluation/inference.")
+        else:
+            # No existing model - build architecture for training
+            logger.info("No existing model found. Building new architecture for training...")
+            self.emergency_model.build_model()
 
         # Feature extractor for data preprocessing
         self.feature_extractor = FeatureExtractor()
-
-        # Path for saving models
-        self.saved_model_dir = "models/saved_models"
-        self.metadata_dir = "models/metadata"
-        Path(self.saved_model_dir).mkdir(parents=True, exist_ok=True)
-        Path(self.metadata_dir).mkdir(parents=True, exist_ok=True)
 
     def _save_metadata(self):
         """
@@ -73,10 +87,24 @@ class ModelTrainer:
         noise = np.random.normal(0, noise_level, x_data.shape).astype(np.float32)
         return x_data + noise
 
-    def train(self, epochs=10, batch_size=32):
+    def train(self, epochs=10, batch_size=32, force_retrain=False):
         """
         Trains the emergency intent model.
+        Skips training if model was loaded from existing weights (unless force_retrain=True).
+        Automatically saves the model after training completes.
+        
+        Args:
+            epochs: Number of training epochs
+            batch_size: Training batch size
+            force_retrain: If True, train even if model was loaded from file
         """
+        # Check if we should skip training
+        if self.model_loaded_from_file and not force_retrain:
+            logger.info("Model already loaded from existing weights. Skipping training.")
+            print("Model already loaded from existing weights. Skipping training.")
+            print("Use force_retrain=True to retrain anyway.")
+            return
+
         logger.info("Starting model training...")
 
         x_train, y_train, x_val, y_val = self._load_data()
@@ -93,6 +121,10 @@ class ModelTrainer:
             verbose=1
         )
         logger.info("Model training finished.")
+        
+        # Save the model after training completes
+        self.emergency_model.save_model()
+        
         self._evaluate_model(x_val, y_val)
 
     def _evaluate_model(self, x_test, y_test):

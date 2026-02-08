@@ -2,6 +2,11 @@
 """
 Model training and optimization script for TinyML Emergency Detection
 Prepares the quantized model for edge deployment
+
+Implements Persistent Model Check:
+- At startup, checks for existing model at models/saved_models/emergency_intent_model.h5
+- If exists: Loads weights and proceeds to evaluation/inference
+- If not: Trains the model and saves it for next run
 """
 
 import os
@@ -11,10 +16,10 @@ import tensorflow as tf
 from pathlib import Path
 
 # Add src directory to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '.'))
 
-from model import EmergencyIntentModel
-from config import MODEL_INPUT_SHAPE, NUM_CLASSES
+from src.model.architecture import EmergencyIntentModel
+from src.config import MODEL_INPUT_SHAPE, NUM_CLASSES
 
 def create_training_data(num_samples=5000):
     """
@@ -79,7 +84,11 @@ def create_training_data(num_samples=5000):
 
 def train_and_quantize():
     """
-    Complete training and quantization pipeline
+    Complete training and quantization pipeline with persistent model check.
+    
+    - Checks for existing model at startup
+    - If exists: Loads weights and skips training
+    - If not: Trains and saves the model
     """
     print("TinyML Emergency Model Training & Quantization")
     print("=" * 55)
@@ -87,28 +96,63 @@ def train_and_quantize():
     # Initialize model
     model = EmergencyIntentModel()
 
-    # Create training data
-    X_train, y_train = create_training_data(num_samples=5000)
 
-    print(f"Training data shape: {X_train.shape}")
-    print(f"Labels shape: {y_train.shape}")
+    # === PERSISTENT MODEL CHECK ===
+    # Check if existing model weights exist (cross-platform path)
+    h5_model_path = model.h5_model_path
+    
+    if os.path.exists(h5_model_path):
+        print("\n" + "=" * 55)
+        print("Existing model found. Loading weights...")
+        print("=" * 55)
+        
+        # Build architecture first (required to load weights)
+        tf_model = model.build_model()
+        
+        # Load existing weights
+        tf_model.load_weights(h5_model_path)
+        print(f"Model weights loaded from: {h5_model_path}")
+        
+        # Skip training, proceed to evaluation
+        print("\nSkipping training - using existing model.")
+        print("To retrain, delete the existing model file or use --force-retrain flag.")
+        
+    else:
+        print("\n" + "=" * 55)
+        print("No existing model found. Starting training...")
+        print("=" * 55)
+        
+        # Create training data
+        X_train, y_train = create_training_data(num_samples=5000)
 
-    # Build model
-    tf_model = model.build_model()
+        print(f"Training data shape: {X_train.shape}")
+        print(f"Labels shape: {y_train.shape}")
 
-    # Train model
-    print("\nTraining model...")
-    history = tf_model.fit(
-        X_train, y_train,
-        epochs=30,
-        batch_size=32,
-        validation_split=0.2,
-        verbose=1
-    )
+        # Build model
+        tf_model = model.build_model()
 
-    # Evaluate
+        # Train model
+        print("\nTraining model...")
+        history = tf_model.fit(
+            X_train, y_train,
+            epochs=30,
+            batch_size=32,
+            validation_split=0.2,
+            verbose=1
+        )
+
+        # Save model weights after training completes
+        print(f"\nSaving model weights to: {h5_model_path}")
+        # Ensure directory exists (cross-platform)
+        Path(os.path.dirname(h5_model_path)).mkdir(parents=True, exist_ok=True)
+        tf_model.save_weights(h5_model_path)
+        print(f"Model saved to {h5_model_path}")
+
+    # === EVALUATION (runs for both loaded and trained models) ===
     print("\nEvaluating model...")
-    loss, accuracy = tf_model.evaluate(X_train, y_train, verbose=0)
+    # Generate some test data for evaluation
+    X_test, y_test = create_training_data(num_samples=500)
+    loss, accuracy = model.model.evaluate(X_test, y_test, verbose=0)
     print(f"Loss: {loss:.4f}")
     print(f"Accuracy: {accuracy:.2f}")
 
@@ -120,8 +164,8 @@ def train_and_quantize():
     print("\nVerifying quantized model...")
     model.load_model()
 
-    # Test inference
-    test_input = X_train[:5]  # Test with 5 samples
+    # Test inference (use test data, not X_train which may not exist)
+    test_input = X_test[:5]  # Test with 5 samples
     print("Testing inference on 5 samples...")
 
     for i, sample in enumerate(test_input):
